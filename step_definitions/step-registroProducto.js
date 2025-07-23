@@ -15,14 +15,14 @@ When('el usuario crea el formulario con Código {string}, Descripción {string},
 async function (codigo, descripcion, stockActual, costo, precioVenta, unidadMedida) {
     const datos = { codigo, descripcion, stockActual, costo, precioVenta, unidadMedida };
     await llenarFormularioProducto(this.page, datos, 'crear');
-    // 🔥 AGREGAR: Guardar referencia del producto creado
-    this.productoCreado = {
-        codigo: codigo,
-        descripcion: descripcion,
-        fechaCreacion: new Date()
-    };
+    // AGREGAR: Guardar referencia del producto creado
+   // this.productoCreado = {
+        //codigo: codigo,
+       // descripcion: descripcion,
+     //   fechaCreacion: new Date()
+   // };
     
-    console.log(`✅ Producto guardado en memoria: ${codigo}`);
+   // console.log(` Producto guardado en memoria: ${codigo}`);
 
 });
 
