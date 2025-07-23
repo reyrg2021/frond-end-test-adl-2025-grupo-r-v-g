@@ -10,9 +10,9 @@ Feature: Funcionalidad de eliminar un producto
     Scenario: Usuario registrado elimina el producto iPhone 16 Pro Max
         When el usuario selecciona la lista desplegable de Entidades
         And el usuario consulta sobre Artículos
-        And el usuario elimina el producto con código "IP-16-Pro-2025-v11"
+        And el usuario elimina el producto con código "IP-16-Pro-2025-v13"
         Then el usuario ve un mensaje de confirmación de eliminación
-        And el producto "IP-16-Pro-2025-v11" no aparece en la lista
+        And el producto "IP-16-Pro-2025-v13" no aparece en la lista
         
 
 

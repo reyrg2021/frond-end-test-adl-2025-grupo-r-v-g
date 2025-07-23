@@ -20,15 +20,16 @@ When('el usuario elimina el producto con código {string}', async function (codi
         throw new Error(`❌ No se encontró ningún ID numérico en la fila del producto ${codigoProducto}`);
     }
 
-    const idInterno = coincidencias[0][0]; // Tomamos la primera coincidencia
-    console.log(`🔢 ID interno encontrado: ${idInterno}`);
+    // 4. Tomar el último número como el ID interno correcto
+    const idInterno = coincidencias[coincidencias.length - 1][0];
+    console.log(`🔢 ID interno correcto extraído: ${idInterno}`);
 
-    // 4. Hacer clic en el botón de eliminar correspondiente
+    // 5. Hacer clic en el botón de eliminar correspondiente
     const botonEliminar = this.page.getByRole('button', { name: idInterno }).nth(1);
     await botonEliminar.click();
     console.log(`🗑️ Click en botón de eliminar para ID interno ${idInterno}`);
 
-    // 5. Confirmar si aparece un modal de confirmación
+    // 6. Confirmar si aparece un modal
     const confirmar = this.page.getByRole('button', { name: /confirmar/i });
     if (await confirmar.isVisible()) {
         await confirmar.click();
