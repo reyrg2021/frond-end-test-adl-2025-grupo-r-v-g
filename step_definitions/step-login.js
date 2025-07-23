@@ -38,3 +38,17 @@ Then('el texto {string} esta visible para el usuario', async function (textoEspe
     console.log(`DEBUG: Texto "${textoEsperado}" verificado como visible`);
 });
 
+Then('el usuario ve un mensaje error como {string}', async function (descripcion){
+    // Verificar el mensaje de éxito completo
+    await expect(this.page.getByText(descripcion)).toContainText(descripcion);
+    console.log(`Mensaje de error: ${descripcion}`);
+});
+
+
+Then('el usuario se mantiene en la página de login de SELGOM S.A', async function () {
+    // Esperar a que la navegación se complete
+    await this.page.waitForURL(/.*\/login/, { timeout: 10000 });
+    await expect(this.page).toHaveURL(/.*\/login/);
+    
+});
+
