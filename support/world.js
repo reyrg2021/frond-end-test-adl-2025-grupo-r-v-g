@@ -15,7 +15,14 @@ class PlaywrightWorld extends World {
         this.headless = process.env.HEADLESS !== 'false';
         this.baseURL = process.env.BASE_URL || options.parameters.baseUrl;
     }
+    async goTo(path = '/') {
+        if (!this.page) {
+            throw new Error('La página aún no ha sido inicializada. Llama a init() primero.');
+        }
 
+        const url = new URL(path, this.baseURL).toString();
+        await this.page.goto(url);
+    }
     async init() {
         // Seleccionar browser dinámicamente
         const browsers = { chromium, firefox, webkit };
