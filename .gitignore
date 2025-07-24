@@ -4,7 +4,7 @@ node_modules/
 
 # Archivos generados automáticamente
 pdf/
-videos/
+videos_clase/
 
 # Salidas temporales de tests
 *.log
