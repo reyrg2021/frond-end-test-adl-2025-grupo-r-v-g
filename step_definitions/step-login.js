@@ -18,37 +18,30 @@ When('el usuario ingresa la contraseña {string}', async function (password) {
 });
 
 When('el usuario inicia la sesión en el botón de login', async function () {
-    // Agregar una pequeña espera antes del click para asegurar que los campos estén completados
-    await this.page.waitForTimeout(500);
     await this.page.getByRole('button', { name: 'Ingresar' }).click();
     console.log('DEBUG: Click en botón Ingresar realizado');
 });
 
 Then('el usuario está en la página de inicio de SELGOM S.A', async function () {
-    // Esperar a que la navegación se complete
-    await this.page.waitForURL(/.*\/dashboard/, { timeout: 10000 });
+    // await this.page.waitForURL(/.*\/dashboard/, { timeout: 10000 });
     await expect(this.page).toHaveURL(/.*\/dashboard/);
     console.log('DEBUG: Navegación a dashboard completada');
 });
 
 Then('el texto {string} esta visible para el usuario', async function (textoEsperado) {
-    // Esperar a que el elemento sea visible antes de hacer la verificación
-    await this.page.waitForSelector(`text=${textoEsperado}`, { timeout: 10000 });
+    //await this.page.waitForSelector(`text=${textoEsperado}`, { timeout: 10000 });
     await expect(this.page.getByText(textoEsperado)).toBeVisible();
     console.log(`DEBUG: Texto "${textoEsperado}" verificado como visible`);
 });
 
 Then('el usuario ve un mensaje error como {string}', async function (descripcion){
-    // Verificar el mensaje de éxito completo
     await expect(this.page.getByText(descripcion)).toContainText(descripcion);
     console.log(`Mensaje de error: ${descripcion}`);
 });
 
 
 Then('el usuario se mantiene en la página de login de SELGOM S.A', async function () {
-    // Esperar a que la navegación se complete
-    await this.page.waitForURL(/.*\/login/, { timeout: 10000 });
+    // await this.page.waitForURL(/.*\/login/, { timeout: 10000 });
     await expect(this.page).toHaveURL(/.*\/login/);
-    
 });
 

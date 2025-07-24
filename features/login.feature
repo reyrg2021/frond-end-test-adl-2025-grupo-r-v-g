@@ -1,4 +1,4 @@
-@login-SELGOM
+@login-SELGOM @not-requiere-login
 Feature: Funcionalidad de login
     Como usuario del sistema
     Quiero poder iniciar sesión en el sitio de SELGOM S.A

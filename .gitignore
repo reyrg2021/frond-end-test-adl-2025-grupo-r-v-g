@@ -1,36 +1,38 @@
 
-# ⛔ Dependencias
+# Dependencias
 node_modules/
 
-# 📂 Archivos generados automáticamente
+# Archivos generados automáticamente
 pdf/
 videos/
 reports/
 
-# 📁 Salidas temporales de tests
+# Salidas temporales de tests
 *.log
 *.tmp
 *.cache
 *.pid
 
-# 📂 Archivos de VSCode o editores
+# Archivos de VSCode o editores
 .vscode/
 .idea/
 *.sublime-project
 *.sublime-workspace
 
-# 🧪 Playwright
+# Playwright
 test-results/
 playwright-report/
 trace.zip
 
-# 🛡️ Entornos y configuración local
+# Entornos y configuración local
 .env
 .env.local
 .env.test
 .env.*.local
+*.txt
 
-# 🧱 Sistema
+
+# Sistema
 .DS_Store
 Thumbs.db
 

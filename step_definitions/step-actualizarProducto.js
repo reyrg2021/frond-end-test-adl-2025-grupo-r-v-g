@@ -18,11 +18,8 @@ async function (codigo, descripcion, stockActual, costo, precioVenta, unidadMedi
 });
 
 Then('el usuario ve un mensaje de éxito que contiene {string}', async function (descripcion){
-    // Verificar el mensaje de éxito completo
-    const mensajeCompleto = `Artículo "${descripcion}" actualizado con éxito!`;
-    
-    await expect(this.page.getByText(mensajeCompleto)).toContainText(descripcion);
-    
+    const mensajeCompleto = `Artículo "${descripcion}" actualizado con éxito!`;    
+    await expect(this.page.getByText(mensajeCompleto)).toContainText(descripcion);   
     console.log(`Mensaje de éxito completo verificado: ${mensajeCompleto}`);
 });
 
