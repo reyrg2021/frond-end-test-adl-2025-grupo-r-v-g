@@ -49,7 +49,7 @@ Then('el producto {string} no aparece en la lista', async function (codigoProduc
 
 
 //////////// STEP DEFINITIONS PARA LOS ESCENARIOS DE BORRAR  @esperado-que-falle @cancelar Y @esperado-que-falle @confirmar
-Then('aparece una ventana de confirmación preguntando {string}', async function (mensajeEsperado) {
+When('aparece una ventana de confirmación preguntando {string}', async function (mensajeEsperado) {
     console.log(`Buscando ventana de confirmación con mensaje: ${mensajeEsperado}`);
     
     // Buscar diferentes tipos de ventanas de confirmación
@@ -83,7 +83,7 @@ When('el usuario presiona el botón {string}', async function (nombreBoton) {
     await boton.click();
     console.log(`Click realizado en botón: ${nombreBoton} (no debería llegar aquí)`);
 });
-
+/*
 Then('la ventana de confirmación se cierra', async function () {
     console.log('Verificando que la ventana de confirmación se haya cerrado');
     const ventanaConfirmacion = this.page.locator('.modal, .dialog, [role="dialog"]');
@@ -91,7 +91,7 @@ Then('la ventana de confirmación se cierra', async function () {
     await expect(ventanaConfirmacion).toHaveCount(0, { timeout: 5000 });
     console.log('Ventana de confirmación cerrada correctamente');
 });
-
+*/
 Then('el producto {string} sigue apareciendo en la lista', async function (codigoProducto) {
     const fila = this.page.locator(`tr:has-text("${codigoProducto}")`);
     await expect(fila).toBeVisible();

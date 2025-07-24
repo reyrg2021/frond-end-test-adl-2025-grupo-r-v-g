@@ -20,7 +20,8 @@ Feature: Funcionalidad de eliminar un producto
         When el usuario selecciona la lista desplegable de Entidades
         And el usuario consulta sobre Artículos
         And el usuario presiona eliminar el producto con código "IP-16-Pro-2025-v14" 
-        And aparece una ventana de confirmación preguntando "¿Está seguro que desea eliminar este producto?" and el usuario presiona el botón "Cancelar"
+        And aparece una ventana de confirmación preguntando "¿Está seguro que desea eliminar este producto?" 
+        And el usuario presiona el botón "Cancelar"
         Then el producto "IP-16-Pro-2025-v14" sigue apareciendo en la lista
 
     @esperado-que-falle @confirmar
@@ -28,7 +29,8 @@ Feature: Funcionalidad de eliminar un producto
         When el usuario selecciona la lista desplegable de Entidades
         And el usuario consulta sobre Artículos
         And el usuario presiona eliminar el producto con código "IP-16-Pro-2025-v14" 
-        And aparece una ventana de confirmación preguntando "¿Está seguro que desea eliminar este producto?" and el usuario presiona el botón "Aceptar"
+        And aparece una ventana de confirmación preguntando "¿Está seguro que desea eliminar este producto?" 
+        And el usuario presiona el botón "Aceptar"
         Then el producto "IP-16-Pro-2025-v14" no aparece en la lista
 
 

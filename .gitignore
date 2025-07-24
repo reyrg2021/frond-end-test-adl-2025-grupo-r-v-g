@@ -5,7 +5,6 @@ node_modules/
 # Archivos generados automáticamente
 pdf/
 videos/
-reports/
 
 # Salidas temporales de tests
 *.log
