@@ -18,7 +18,12 @@ videos/
 *.sublime-project
 *.sublime-workspace
 
+# Cucumber/reports/screenshots
+reports/screenshots
+
 # Playwright
+test/
+test-examples/
 test-results/
 playwright-report/
 trace.zip
