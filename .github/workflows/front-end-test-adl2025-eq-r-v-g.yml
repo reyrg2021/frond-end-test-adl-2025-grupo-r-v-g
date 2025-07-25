@@ -4,7 +4,7 @@ name: Pruebas E2E con cucumber-Gherkin y Playwright
 # Condiciones del Workflow
 on: 
     push:
-         branches: [ main ]  
+         branches: [ githubActions ]  
 # Trabajo a ejecutar
 jobs:
     ejecute-cucumber-playwright:
