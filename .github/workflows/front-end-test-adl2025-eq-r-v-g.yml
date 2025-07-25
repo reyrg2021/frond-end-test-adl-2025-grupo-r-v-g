@@ -1,0 +1,50 @@
+# Nombre del workflow
+name: Pruebas E2E con cucumber-Gherkin y Playwright
+
+# Condiciones del Workflow
+on: 
+    push:
+         branches: [ main ]  
+# Trabajo a ejecutar
+jobs:
+    ejecute-cucumber-playwright:
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+
+        strategy:
+            fail-fast: false
+            matrix:
+                # Un solo navegador para que sea más rápido
+                browser: [chromium]
+
+        steps: 
+            # Traer el código a la máquina virtual (market Place) 
+            - name: Bajar el código
+              uses: actions/checkout@v4
+            
+            - name: Instalar Node.js
+              uses: actions/setup-node@v4    
+              with:
+                node-version: '22'
+            
+            - name: Instale las dependencias
+              run: npm ci
+            
+            - name: Instale los browser para playwright
+              run: npx playwright install --with-deps
+
+            # 7. Crear directorio para reportes
+            - name: Crear una carpeta para reportes donde se agrupen todos 
+              run: mkdir -p test-results
+
+            - name: Ejecuta Cucumber
+              run: npx cucumber-js
+
+              env:
+          # Variables específicas para Playwright
+                PLAYWRIGHT_BROWSER: ${{ matrix.browser }}
+                HEADLESS: true
+                CI: true
+
+
+
