@@ -6,7 +6,7 @@ Given('que el usuario está en la página de login de SELGOM S.A', async functio
     console.log('DEBUG: URL después de goto(/):', this.page.url());
     await expect(this.page).toHaveURL(/.*\/login/);
 });
-
+/////////////// Escenario 1 ///////////////////
 When('el usuario ingresa el email {string}', async function (email) {
     await this.page.getByRole('textbox', { name: 'Email' }).fill(email);
     console.log(`DEBUG: Email ingresado: ${email}`);
@@ -33,7 +33,7 @@ Then('el texto {string} esta visible para el usuario', async function (textoEspe
     await expect(this.page.getByText(textoEsperado)).toBeVisible();
     console.log(`DEBUG: Texto "${textoEsperado}" verificado como visible`);
 });
-
+/////////////// Escenario 2 ///////////////////
 Then('el usuario ve un mensaje error como {string}', async function (descripcion){
     await expect(this.page.getByText(descripcion)).toContainText(descripcion);
     console.log(`Mensaje de error: ${descripcion}`);
