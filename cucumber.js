@@ -43,11 +43,16 @@ module.exports = {
         ],
 
         // Define el formato de la salida en la consola y para los reportes.
+        format: ["allure-cucumberjs/reporter"],
+            formatOptions: {
+            resultsDir: "allure-results",
+            },
+        /*
         format: [
             'progress-bar', // Muestra una barra de progreso durante la ejecución
             'json:reports/cucumber-report.json' // Genera un reporte JSON
         ],
-
+        */
         // Permite pasar parámetros a tu World personalizado.
         worldParameters: {
             baseUrl: 'https://test-adl.leonardojose.dev'
