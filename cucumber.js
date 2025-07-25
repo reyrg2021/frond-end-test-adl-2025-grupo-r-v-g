@@ -33,7 +33,7 @@ module.exports = {
             'features/actualizarProducto.feature',       // 3. Actualizar producto
             'features/consultaProducto.feature',         // 4. Consultar producto
             'features/borrarProducto.feature',            // 5. Borrar producto
-            'features/sesion-persistente.feature'         // 6. Probar sesión persistente
+            'features/sesionPersistente.feature'         // 6. Probar sesión persistente
         ],
 
         // Le dice a Cucumber dónde encontrar tus definiciones de pasos y archivos de soporte.
