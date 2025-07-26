@@ -54,7 +54,7 @@ jobs:
 
       # 6. Ejecutar pruebas Cucumber
       - name: Ejecuta Cucumber
-        run: npx cucumber-js --config cucumber-temp.js
+        run: npx cucumber-js
         env:
           # Variables específicas para Playwright
           PLAYWRIGHT_BROWSER: ${{ matrix.browser }}
