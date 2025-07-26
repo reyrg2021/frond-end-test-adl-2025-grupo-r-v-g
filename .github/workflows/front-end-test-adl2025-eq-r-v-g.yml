@@ -1,4 +1,4 @@
-# Workflow para pruebas E2E con Cucumber y Playwright (Configuración oficial Allure)
+# Workflow para pruebas E2E con Cucumber y Playwright
 name: Pruebas E2E con cucumber-Gherkin y Playwright
 
 # Triggers del workflow
@@ -45,16 +45,21 @@ jobs:
       - name: Instale los browser para playwright
         run: npx playwright install --with-deps chromium
 
-      # 5. Crear directorios necesarios
+      # 5. Crear directorios necesarios para reportes
       - name: Crear carpetas para reportes
         run: |
-          mkdir -p allure-results
+          mkdir -p test-results
           mkdir -p reports/videos
           mkdir -p reports/screenshots
 
-      # 6. Ejecutar pruebas Cucumber
-      - name: Ejecuta Cucumber
-        run: npx cucumber-js
+      # 6. Ejecutar pruebas Cucumber con múltiples reporters
+      - name: Ejecuta Cucumber con reporters
+        run: |
+          npx cucumber-js \
+            --format progress-bar \
+            --format json:test-results/cucumber-report.json \
+            --format html:test-results/cucumber-report.html \
+            --format @cucumber/pretty-formatter
         env:
           # Variables específicas para Playwright
           PLAYWRIGHT_BROWSER: ${{ matrix.browser }}
@@ -62,65 +67,93 @@ jobs:
           CI: true
           BASE_URL: https://test-adl.leonardojose.dev
 
-      # 7. Cargar historial de reportes Allure (OFICIAL)
-      - name: Cargar historial de reportes previos
-        uses: actions/checkout@v4
+      # 7. Generar reporte HTML de resumen (si fallan las pruebas)
+      - name: Generar reporte de resumen
         if: always()
-        continue-on-error: true
-        with:
-          ref: gh-pages
-          path: gh-pages
+        run: |
+          echo "=== 📊 RESUMEN DE EJECUCIÓN ===" > test-results/summary.txt
+          echo "Navegador: ${{ matrix.browser }}" >> test-results/summary.txt
+          echo "Fecha: $(date)" >> test-results/summary.txt
+          echo "Base URL: $BASE_URL" >> test-results/summary.txt
+          
+          # Contar archivos de resultado si existen
+          if [ -f "test-results/cucumber-report.json" ]; then
+            echo "✅ Reporte JSON generado" >> test-results/summary.txt
+          fi
+          if [ -f "test-results/cucumber-report.html" ]; then
+            echo "✅ Reporte HTML generado" >> test-results/summary.txt
+          fi
 
-      # 8. Construir reporte Allure con historial (OFICIAL)
-      - name: Construir reporte Allure
-        uses: simple-elf/allure-report-action@master
-        if: always()
-        with:
-          gh_pages: gh-pages
-          allure_history: allure-history
-          allure_results: allure-results
-
-      # 9. Publicar reporte a GitHub Pages (OFICIAL)
-      - name: Publicar reporte en GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        if: always()
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: allure-history
-
-      # 10. Upload de videos como backup
-      - name: Subir videos y artefactos
+      # 8. Upload de reportes como artifacts
+      - name: Subir reportes y artefactos
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-artifacts-${{ matrix.browser }}
+          name: test-reports-${{ matrix.browser }}
           path: |
+            test-results/
             reports/
-            allure-results/
           retention-days: 7
 
-      # 11. Mostrar enlaces de reportes
+      # 9. Comentar en PR con enlaces a reportes (si es PR)
+      - name: Comentar resultados en PR
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            let comment = `## 🧪 Resultados de Pruebas E2E - ${{ matrix.browser }}\n\n`;
+            
+            // Verificar si existe el archivo JSON para obtener estadísticas
+            if (fs.existsSync('test-results/cucumber-report.json')) {
+              const results = JSON.parse(fs.readFileSync('test-results/cucumber-report.json', 'utf8'));
+              comment += `📊 **Reportes Generados:**\n`;
+              comment += `- ✅ JSON Report\n`;
+              comment += `- ✅ HTML Report\n\n`;
+            }
+            
+            comment += `📁 **Enlaces:**\n`;
+            comment += `- [Artifacts de esta ejecución](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\n`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      # 10. Mostrar enlaces de reportes en logs
       - name: Mostrar enlaces de reportes
         if: always()
         run: |
           echo "=== 📊 REPORTES GENERADOS ==="
           echo ""
-          echo "🌐 Reporte Allure en GitHub Pages:"
-          echo "   https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
-          echo ""
-          echo "📁 Artifacts también disponibles en esta ejecución:"
+          echo "📁 Reportes Cucumber disponibles en artifacts:"
+          echo "   - JSON: test-results/cucumber-report.json"
+          echo "   - HTML: test-results/cucumber-report.html"
           echo "   - Videos: reports/videos/"
-          echo "   - Resultados Allure: allure-results/"
+          echo "   - Screenshots: reports/screenshots/"
           echo ""
           
           # Contar archivos generados
+          if [ -d "test-results" ]; then
+            echo "📋 Archivos en test-results:"
+            ls -la test-results/ || echo "   (vacío)"
+          fi
+          
           if [ -d "reports/videos" ]; then
             video_count=$(ls -1 reports/videos/*.webm 2>/dev/null | wc -l)
             echo "🎥 Videos generados: $video_count"
           fi
-          
-          if [ -d "allure-results" ]; then
-            result_count=$(ls -1 allure-results/*.json 2>/dev/null | wc -l)
-            echo "📋 Resultados Allure: $result_count archivos"
+
+      # 11. Verificar resultados de pruebas
+      - name: Verificar resultados de pruebas
+        if: always()
+        run: |
+          if [ -f "test-results/cucumber-report.json" ]; then
+            echo "✅ Reportes generados correctamente"
+          else
+            echo "❌ No se generaron reportes - posible fallo en ejecución"
+            exit 1
           fi

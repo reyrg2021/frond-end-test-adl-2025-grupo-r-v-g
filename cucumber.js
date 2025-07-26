@@ -43,11 +43,14 @@ module.exports = {
 
         // REPORTERS SIN ALLURE (para testing)
         format: [
-            'progress-bar',
-            'json:test-results/cucumber-report.json',
-            'html:test-results/cucumber-report.html',
-            '@cucumber/pretty-formatter'
-        ],
+      'progress-bar',  // ✅ Incluido por defecto
+      'json:test-results/cucumber-report.json',  // ✅ Incluido por defecto
+      'html:test-results/cucumber-report.html',  // ✅ Incluido por defecto
+      '@cucumber/pretty-formatter'  // ✅ Instalado por separado
+    ],
+    formatOptions: {
+      snippetInterface: 'async-await'
+    },
 
         // Mismos parámetros
         worldParameters: {
