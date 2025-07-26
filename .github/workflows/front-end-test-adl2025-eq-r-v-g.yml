@@ -1,159 +1,94 @@
-# Workflow para pruebas E2E con Cucumber y Playwright
+# Nombre del workflow
 name: Pruebas E2E con cucumber-Gherkin y Playwright
 
-# Triggers del workflow
-on:
-  push:
-    branches: [ githubActions ]
-  workflow_dispatch: # Permite ejecución manual
-
-# Variables de entorno globales
-env:
-  NODE_VERSION: '22'
-  PLAYWRIGHT_BROWSERS_PATH: 0
-
+# Condiciones del Workflow
+on: 
+    push:
+         branches: [ githubActions ]  
+# Trabajo a ejecutar
 jobs:
-  # Job para pruebas E2E
-  ejecute-cucumber-playwright:
-    name: Ejecutar pruebas Cucumber con Playwright
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    
-    strategy:
-      fail-fast: false
-      matrix:
-        # Un solo navegador para que sea más rápido
-        browser: [chromium]
-        
-    steps:
-      # 1. Checkout del código
-      - name: Bajar el código
-        uses: actions/checkout@v4
+    ejecute-cucumber-playwright:
+        name: Ejecutar pruebas Cucumber con Playwright
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
 
-      # 2. Setup de Node.js con cache
-      - name: Instalar Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+        strategy:
+            fail-fast: false
+            matrix:
+                # Un solo navegador para que sea más rápido
+                browser: [chromium]
 
-      # 3. Instalación de dependencias
-      - name: Instale las dependencias
-        run: npm ci
-
-      # 4. Instalación de browsers de Playwright
-      - name: Instale los browser para playwright
-        run: npx playwright install --with-deps chromium
-
-      # 5. Crear directorios necesarios para reportes
-      - name: Crear carpetas para reportes
-        run: |
-          mkdir -p test-results
-          mkdir -p reports/videos
-          mkdir -p reports/screenshots
-
-      # 6. Ejecutar pruebas Cucumber con múltiples reporters
-      - name: Ejecuta Cucumber con reporters
-        run: |
-          npx cucumber-js \
-            --format progress-bar \
-            --format json:test-results/cucumber-report.json \
-            --format html:test-results/cucumber-report.html \
-            --format @cucumber/pretty-formatter
-        env:
-          # Variables específicas para Playwright
-          PLAYWRIGHT_BROWSER: ${{ matrix.browser }}
-          HEADLESS: true
-          CI: true
-          BASE_URL: https://test-adl.leonardojose.dev
-
-      # 7. Generar reporte HTML de resumen (si fallan las pruebas)
-      - name: Generar reporte de resumen
-        if: always()
-        run: |
-          echo "=== 📊 RESUMEN DE EJECUCIÓN ===" > test-results/summary.txt
-          echo "Navegador: ${{ matrix.browser }}" >> test-results/summary.txt
-          echo "Fecha: $(date)" >> test-results/summary.txt
-          echo "Base URL: $BASE_URL" >> test-results/summary.txt
-          
-          # Contar archivos de resultado si existen
-          if [ -f "test-results/cucumber-report.json" ]; then
-            echo "✅ Reporte JSON generado" >> test-results/summary.txt
-          fi
-          if [ -f "test-results/cucumber-report.html" ]; then
-            echo "✅ Reporte HTML generado" >> test-results/summary.txt
-          fi
-
-      # 8. Upload de reportes como artifacts
-      - name: Subir reportes y artefactos
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-reports-${{ matrix.browser }}
-          path: |
-            test-results/
-            reports/
-          retention-days: 7
-
-      # 9. Comentar en PR con enlaces a reportes (si es PR)
-      - name: Comentar resultados en PR
-        if: github.event_name == 'pull_request' && always()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
+        steps: 
+            # Traer el código a la máquina virtual (market Place) 
+            - name: Bajar el código
+              uses: actions/checkout@v4
             
-            let comment = `## 🧪 Resultados de Pruebas E2E - ${{ matrix.browser }}\n\n`;
+            - name: Instalar Node.js
+              uses: actions/setup-node@v4    
+              with:
+                node-version: ${{ env.NODE_VERSION }}
+                cahe: 'npm'
             
-            // Verificar si existe el archivo JSON para obtener estadísticas
-            if (fs.existsSync('test-results/cucumber-report.json')) {
-              const results = JSON.parse(fs.readFileSync('test-results/cucumber-report.json', 'utf8'));
-              comment += `📊 **Reportes Generados:**\n`;
-              comment += `- ✅ JSON Report\n`;
-              comment += `- ✅ HTML Report\n\n`;
-            }
+            - name: Instale las dependencias
+              run: npm ci
             
-            comment += `📁 **Enlaces:**\n`;
-            comment += `- [Artifacts de esta ejecución](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\n`;
-            
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: comment
-            });
+            - name: Instale los browser para playwright solo chromium
+              run: npx playwright install --with-deps chromium
 
-      # 10. Mostrar enlaces de reportes en logs
-      - name: Mostrar enlaces de reportes
-        if: always()
-        run: |
-          echo "=== 📊 REPORTES GENERADOS ==="
-          echo ""
-          echo "📁 Reportes Cucumber disponibles en artifacts:"
-          echo "   - JSON: test-results/cucumber-report.json"
-          echo "   - HTML: test-results/cucumber-report.html"
-          echo "   - Videos: reports/videos/"
-          echo "   - Screenshots: reports/screenshots/"
-          echo ""
-          
-          # Contar archivos generados
-          if [ -d "test-results" ]; then
-            echo "📋 Archivos en test-results:"
-            ls -la test-results/ || echo "   (vacío)"
-          fi
-          
-          if [ -d "reports/videos" ]; then
-            video_count=$(ls -1 reports/videos/*.webm 2>/dev/null | wc -l)
-            echo "🎥 Videos generados: $video_count"
-          fi
+            # Crear directorio para reportes
+            - name: Crear una carpeta para reportes donde se agrupen todos 
+              run: |
+                mkdir -p allure-results
+                mkdir -p reports/videos
+                mkdir -p reports/screenshots
 
-      # 11. Verificar resultados de pruebas
-      - name: Verificar resultados de pruebas
-        if: always()
-        run: |
-          if [ -f "test-results/cucumber-report.json" ]; then
-            echo "✅ Reportes generados correctamente"
-          else
-            echo "❌ No se generaron reportes - posible fallo en ejecución"
-            exit 1
-          fi
+            - name: Ejecuta Cucumber
+              run: npx cucumber-js
+
+              env:
+              # Variables específicas para Playwright (basadas en tu worldParameters)
+                PLAYWRIGHT_BROWSER: ${{ matrix.browser }}
+                HEADLESS: true
+                CI: true
+          # Tu URL base desde cucumber.js
+                BASE_URL: https://test-adl.leonardojose.dev
+            - name: Generar reporte Allure
+              if: always()
+              run: |
+                if ! command -v allure &> /dev/null; then
+                  echo "Instalando Allure..."
+                  curl -o allure-2.24.0.tgz -L https://github.com/allure-framework/allure2/releases/download/2.24.0/allure-2.24.0.tgz
+                  tar -zxf allure-2.24.0.tgz
+                  sudo mv allure-2.24.0 /opt/allure
+                  sudo ln -s /opt/allure/bin/allure /usr/bin/allure
+                fi
+                allure generate allure-results --clean -o allure-report
+            - name: Subir reportes Allure
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                name: allure-report-${{ matrix.browser }}
+                path: |
+                  allure-report/
+                  allure-results/
+                retention-days: 7
+            - name: Subir artefactos de prueba (videos, screenshots)
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                name: test-artifacts-${{ matrix.browser }}
+                path: |
+                  reports/
+                  test-results/
+                retention-days: 7
+            - name: Mostrar resumen de resultados
+              if: always()
+              run: |
+                echo "=== RESUMEN DE EJECUCIÓN ==="
+                echo "Reportes generados en: allure-report/"
+                echo "Videos guardados en: reports/videos/"
+                echo "Screenshots en: reports/screenshots/"
+                if [ -d "allure-results" ]; then
+                  echo "Archivos de resultados Allure:"
+                  ls -la allure-results/
+                fi
