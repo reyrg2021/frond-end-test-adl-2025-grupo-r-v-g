@@ -31,8 +31,8 @@ module.exports = {
             'features/registroProducto.feature',
             'features/actualizarProducto.feature',
             'features/consultaProducto.feature',
-            'features/borrarProducto.feature',
-            'features/sesionPersistente.feature'
+            'features/sesionPersistente.feature',
+            'features/borrarProducto.feature'
         ],
 
         // Mismo require
