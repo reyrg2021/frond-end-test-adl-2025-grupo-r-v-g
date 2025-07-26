@@ -1,126 +1,177 @@
-# Workflow para pruebas E2E con Cucumber y Playwright (Configuración oficial Allure)
-name: Pruebas E2E con cucumber-Gherkin y Playwright
+# Workflow de DIAGNÓSTICO para identificar el problema exacto
+name: 🔍 DIAGNÓSTICO - Pruebas E2E
 
-# Triggers del workflow
 on:
   push:
     branches: [ githubActions ]
-  workflow_dispatch: # Permite ejecución manual
+  workflow_dispatch:
 
-# Variables de entorno globales
 env:
   NODE_VERSION: '22'
-  PLAYWRIGHT_BROWSERS_PATH: 0
 
 jobs:
-  # Job para pruebas E2E
-  ejecute-cucumber-playwright:
-    name: Ejecutar pruebas Cucumber con Playwright
+  diagnostico-completo:
+    name: 🔬 Diagnóstico Completo del Error
     runs-on: ubuntu-latest
-    timeout-minutes: 30
     
-    strategy:
-      fail-fast: false
-      matrix:
-        # Un solo navegador para que sea más rápido
-        browser: [chromium]
-        
     steps:
-      # 1. Checkout del código
-      - name: Bajar el código
+      # 1. Checkout
+      - name: 📦 Checkout código
         uses: actions/checkout@v4
 
-      # 2. Setup de Node.js con cache
-      - name: Instalar Node.js
+      # 2. Node.js setup
+      - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      # 3. Instalación de dependencias
-      - name: Instale las dependencias
-        run: npm ci
+      # 3. Instalar dependencias con verbose
+      - name: 📥 Instalar dependencias (verbose)
+        run: |
+          echo "=== INSTALANDO DEPENDENCIAS ==="
+          npm ci --verbose
+          echo "=== DEPENDENCIAS INSTALADAS ==="
+          npm list --depth=0
 
-      # 4. Instalación de browsers de Playwright
-      - name: Instale los browser para playwright
+      # 4. Verificar instalación de Allure
+      - name: 🔍 Verificar instalación de Allure
+        run: |
+          echo "=== VERIFICANDO ALLURE ==="
+          echo "Buscando allure-cucumberjs..."
+          find node_modules -name "*allure*" -type d
+          echo ""
+          echo "Verificando versión de allure-cucumberjs..."
+          npm list allure-cucumberjs || echo "No encontrado"
+          echo ""
+          echo "Contenido de node_modules/allure-cucumberjs:"
+          ls -la node_modules/allure-cucumberjs/ || echo "Directorio no existe"
+
+      # 5. Instalar Playwright
+      - name: 🎭 Instalar Playwright
         run: npx playwright install --with-deps chromium
 
-      # 5. Crear directorios necesarios
-      - name: Crear carpetas para reportes
+      # 6. Crear directorios y verificar permisos
+      - name: 📁 Crear directorios y verificar permisos
         run: |
-          mkdir -p allure-results
-          mkdir -p reports/videos
-          mkdir -p reports/screenshots
+          echo "=== CREANDO DIRECTORIOS ==="
+          mkdir -p allure-results reports/videos reports/screenshots
+          
+          echo "=== VERIFICANDO PERMISOS ==="
+          ls -la
+          
+          echo "=== PROBANDO ESCRITURA EN ALLURE-RESULTS ==="
+          echo '{"test": "data"}' > allure-results/test.json
+          cat allure-results/test.json
+          rm allure-results/test.json
+          echo "✅ Permisos de escritura OK"
 
-      # 6. Ejecutar pruebas Cucumber
-      - name: Ejecuta Cucumber
-        run: npx cucumber-js
+      # 7. Test de conectividad
+      - name: 🌐 Test de conectividad a la aplicación
+        run: |
+          echo "=== PROBANDO CONECTIVIDAD ==="
+          curl -I https://test-adl.leonardojose.dev/login || echo "❌ Sin conectividad"
+          curl -s https://test-adl.leonardojose.dev/login | head -10 || echo "❌ Error en contenido"
+
+      # 8. Ejecutar UN SOLO FEATURE para debugging
+      - name: 🧪 Ejecutar SOLO login.feature (debugging)
+        run: |
+          echo "=== EJECUTANDO SOLO LOGIN.FEATURE ==="
+          echo "Verificando que existe el archivo..."
+          ls -la features/login.feature
+          
+          echo "Contenido del feature:"
+          head -10 features/login.feature
+          
+          echo "=== EJECUTANDO CUCUMBER CON UN SOLO FEATURE ==="
+          npx cucumber-js features/login.feature --verbose --dry-run
+          
+          echo "=== EJECUCIÓN REAL (SOLO LOGIN) ==="
+          timeout 10m npx cucumber-js features/login.feature --verbose 2>&1 | tee cucumber-output.log
+          
+          CUCUMBER_EXIT=$?
+          echo "Exit code de Cucumber: $CUCUMBER_EXIT"
+          
+          if [ $CUCUMBER_EXIT -ne 0 ]; then
+            echo "=== ERROR EN CUCUMBER - ANALIZANDO ==="
+            echo "Últimas 50 líneas del output:"
+            tail -50 cucumber-output.log
+            
+            echo "=== VERIFICANDO ARCHIVOS GENERADOS ==="
+            ls -la allure-results/ || echo "No se generó allure-results"
+            ls -la reports/ || echo "No se generó reports"
+            
+            exit $CUCUMBER_EXIT
+          fi
         env:
-          # Variables específicas para Playwright
-          PLAYWRIGHT_BROWSER: ${{ matrix.browser }}
+          PLAYWRIGHT_BROWSER: chromium
           HEADLESS: true
           CI: true
           BASE_URL: https://test-adl.leonardojose.dev
 
-      # 7. Cargar historial de reportes Allure (OFICIAL)
-      - name: Cargar historial de reportes previos
-        uses: actions/checkout@v4
+      # 9. Verificar qué generó Allure
+      - name: 📋 Verificar resultados de Allure
         if: always()
-        continue-on-error: true
-        with:
-          ref: gh-pages
-          path: gh-pages
+        run: |
+          echo "=== ANALIZANDO RESULTADOS DE ALLURE ==="
+          
+          if [ -d "allure-results" ]; then
+            echo "✅ Directorio allure-results existe"
+            echo "Contenido:"
+            ls -la allure-results/
+            
+            echo "=== CONTENIDO DE ARCHIVOS ALLURE ==="
+            for file in allure-results/*.json; do
+              if [ -f "$file" ]; then
+                echo "--- $file ---"
+                head -5 "$file"
+                echo ""
+              fi
+            done
+          else
+            echo "❌ No se generó directorio allure-results"
+          fi
 
-      # 8. Construir reporte Allure con historial (OFICIAL)
-      - name: Construir reporte Allure
-        uses: simple-elf/allure-report-action@master
+      # 10. Test manual del reporter Allure
+      - name: 🔧 Test manual del reporter Allure
         if: always()
-        with:
-          gh_pages: gh-pages
-          allure_history: allure-history
-          allure_results: allure-results
+        run: |
+          echo "=== PROBANDO ALLURE REPORTER MANUALMENTE ==="
+          
+          # Crear un resultado fake para probar Allure
+          cat > allure-results/fake-test.json << 'EOF'
+          {
+            "uuid": "test-uuid",
+            "name": "Test Manual",
+            "status": "passed",
+            "start": 1640995200000,
+            "stop": 1640995260000
+          }
+          EOF
+          
+          echo "Archivo fake creado:"
+          cat allure-results/fake-test.json
+          
+          # Probar si el problema es con el reporter específico
+          echo "=== PROBANDO DIFERENTES REPORTERS ==="
+          
+          # Test 1: Sin reporter
+          echo "Test sin reporter Allure..."
+          npx cucumber-js features/login.feature --dry-run --format progress || echo "Error sin reporter"
+          
+          # Test 2: Con reporter JSON simple
+          echo "Test con reporter JSON simple..."
+          npx cucumber-js features/login.feature --dry-run --format json:test-simple.json || echo "Error con JSON simple"
 
-      # 9. Publicar reporte a GitHub Pages (OFICIAL)
-      - name: Publicar reporte en GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        if: always()
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: allure-history
-
-      # 10. Upload de videos como backup
-      - name: Subir videos y artefactos
+      # 11. Upload de logs para análisis
+      - name: 📤 Upload logs para análisis
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-artifacts-${{ matrix.browser }}
+          name: diagnostic-logs
           path: |
-            reports/
+            cucumber-output.log
             allure-results/
+            reports/
+            test-simple.json
           retention-days: 7
-
-      # 11. Mostrar enlaces de reportes
-      - name: Mostrar enlaces de reportes
-        if: always()
-        run: |
-          echo "=== 📊 REPORTES GENERADOS ==="
-          echo ""
-          echo "🌐 Reporte Allure en GitHub Pages:"
-          echo "   https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
-          echo ""
-          echo "📁 Artifacts también disponibles en esta ejecución:"
-          echo "   - Videos: reports/videos/"
-          echo "   - Resultados Allure: allure-results/"
-          echo ""
-          
-          # Contar archivos generados
-          if [ -d "reports/videos" ]; then
-            video_count=$(ls -1 reports/videos/*.webm 2>/dev/null | wc -l)
-            echo "🎥 Videos generados: $video_count"
-          fi
-          
-          if [ -d "allure-results" ]; then
-            result_count=$(ls -1 allure-results/*.json 2>/dev/null | wc -l)
-            echo "📋 Resultados Allure: $result_count archivos"
-          fi
