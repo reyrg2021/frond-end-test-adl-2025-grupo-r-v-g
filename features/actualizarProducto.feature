@@ -16,7 +16,14 @@ Feature: Funcionalidad de actualizar un producto
         Then el usuario ve un mensaje de éxito que contiene "Iphone 16 Pro Max 2025 v13"
         And  el usuario está en la página de Artículos
         
-
+    Scenario: Usuario registrado realiza la actualización de un producto existente con mas de 255 caracteres en el campo de descripción.
+        When el usuario selecciona la lista desplegable de Entidades
+        And  el usuario consulta sobre Artículos
+        And  el usuario selecciona el artículo 'IP-16-Pro-2025-v13'
+        And  el usuario selecciona editar los datos 
+        And  el usuario actualiza el formulario con Código "IP-16-Pro-2025-v13", Descripción ""Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed qui", Stock Actual "10", Costo "1000000", Precio venta "1200000" y selecciona la unidad de medida "Unidad" 
+        Then el usuario ve un mensaje de error "No puede tener mas de 255 caracteres en la descripción del producto"
+        And  el usuario ve el boton "Guardar Cambios"
 
 
        

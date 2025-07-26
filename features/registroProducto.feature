@@ -14,6 +14,14 @@ Feature: Funcionalidad de registro de producto
         And  el usuario crea el formulario con Código "IP-16-2025-v13", Descripción "Iphone 16 2025 v13", Stock Actual "10", Costo "1000000", Precio venta "1200000" y selecciona la unidad de medida "Unidad" 
         Then el usuario ve un mensaje de éxito de artículo creado que contiene "Iphone 16 2025 v13"
         And el usuario está en la página de Artículos
+
+    Scenario: Usuario registrado realiza el registro de un producto con codigo existente
+        When el usuario selecciona la lista desplegable de Entidades
+        And  el usuario consulta sobre Artículos
+        And  el usuario selecciona crear un nuevo articulo
+        And  el usuario crea el formulario con Código "IP-16-2025-v13", Descripción "Iphone 16 2025 v13", Stock Actual "10", Costo "1000000", Precio venta "1200000" y selecciona la unidad de medida "Unidad" 
+        Then el usuario se mantiene en la página de crear un nuevo articulo
+        And el usuario ve un mensaje que indica "Producto existente"
         
     Scenario: Usuario registrado realiza el registro de un nuevo producto con mas de 255 caracteres
         When el usuario selecciona la lista desplegable de Entidades

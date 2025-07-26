@@ -21,3 +21,8 @@ Then('el usuario ve un mensaje de éxito de artículo creado que contiene {strin
     await expect(this.page.getByText(mensajeCompleto)).toContainText(descripcion);
     console.log(`Mensaje de éxito completo verificado: ${mensajeCompleto}`);
 });
+
+Then('el usuario se mantiene en la página de crear un nuevo articulo', async function () {
+    await expect(this.page).toHaveURL(/.*\/nuevo/);
+    console.log("Usuario se mantiene en la página de crear un nuevo artículo");
+});

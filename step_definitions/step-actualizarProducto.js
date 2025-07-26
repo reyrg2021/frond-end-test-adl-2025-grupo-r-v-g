@@ -23,5 +23,15 @@ Then('el usuario ve un mensaje de éxito que contiene {string}', async function 
     console.log(`Mensaje de éxito completo verificado: ${mensajeCompleto}`);
 });
 
+Then('el usuario ve un mensaje de error {string}', async function (mensajeError){
+    const error = mensajeError;
+    await expect(this.page.getByText(error)).toContainText(mensajeError);
+    console.log(`Mensaje de error: ${error}`);
+});
+
+Then('el usuario ve el boton {string}', async function (button){
+    await page.getByRole('button', { name: button }).toBeVisible();
+});
+
 
 
