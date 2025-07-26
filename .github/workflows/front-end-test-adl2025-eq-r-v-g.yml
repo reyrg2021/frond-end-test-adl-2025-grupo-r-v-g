@@ -1,98 +1,126 @@
-# Nombre del workflow
+# Workflow para pruebas E2E con Cucumber y Playwright (Configuración oficial Allure)
 name: Pruebas E2E con cucumber-Gherkin y Playwright
 
-# Condiciones del Workflow
-on: 
-    push:
-         branches: [ githubActions ]  
-# Trabajo a ejecutar
+# Triggers del workflow
+on:
+  push:
+    branches: [ githubActions ]
+  workflow_dispatch: # Permite ejecución manual
+
+# Variables de entorno globales
+env:
+  NODE_VERSION: '22'
+  PLAYWRIGHT_BROWSERS_PATH: 0
+
 jobs:
-    ejecute-cucumber-playwright:
-        name: Ejecutar pruebas Cucumber con Playwright
-        runs-on: ubuntu-latest
-        timeout-minutes: 30
+  # Job para pruebas E2E
+  ejecute-cucumber-playwright:
+    name: Ejecutar pruebas Cucumber con Playwright
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        # Un solo navegador para que sea más rápido
+        browser: [chromium]
+        
+    steps:
+      # 1. Checkout del código
+      - name: Bajar el código
+        uses: actions/checkout@v4
 
-        strategy:
-            fail-fast: false
-            matrix:
-                # Un solo navegador para que sea más rápido
-                browser: [chromium]
+      # 2. Setup de Node.js con cache
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
 
-        steps: 
-            # Traer el código a la máquina virtual (market Place) 
-            - name: Bajar el código
-              uses: actions/checkout@v4
-            
-            - name: Instalar Node.js
-              uses: actions/setup-node@v4    
-              with:
-                node-version: ${{ env.NODE_VERSION }}
-                cahe: 'npm'
-            
-            - name: Instale las dependencias
-              run: npm ci
-            
-            - name: Instale los browser para playwright solo chromium
-              run: npx playwright install --with-deps chromium
+      # 3. Instalación de dependencias
+      - name: Instale las dependencias
+        run: npm ci
 
-            # Crear directorio para reportes
-            - name: Crear una carpeta para reportes donde se agrupen todos 
-              run: |
-                mkdir -p allure-results
-                mkdir -p reports/videos
-                mkdir -p reports/screenshots
+      # 4. Instalación de browsers de Playwright
+      - name: Instale los browser para playwright
+        run: npx playwright install --with-deps chromium
 
-            - name: Ejecuta Cucumber
-              run: npx cucumber-js
+      # 5. Crear directorios necesarios
+      - name: Crear carpetas para reportes
+        run: |
+          mkdir -p allure-results
+          mkdir -p reports/videos
+          mkdir -p reports/screenshots
 
-              env:
-              # Variables específicas para Playwright (basadas en tu worldParameters)
-                PLAYWRIGHT_BROWSER: ${{ matrix.browser }}
-                HEADLESS: true
-                CI: true
-          # Tu URL base desde cucumber.js
-                BASE_URL: https://test-adl.leonardojose.dev
-            - name: Generar reporte Allure
-              if: always()
-              run: |
-                if ! command -v allure &> /dev/null; then
-                  echo "Instalando Allure..."
-                  curl -o allure-2.24.0.tgz -L https://github.com/allure-framework/allure2/releases/download/2.24.0/allure-2.24.0.tgz
-                  tar -zxf allure-2.24.0.tgz
-                  sudo mv allure-2.24.0 /opt/allure
-                  sudo ln -s /opt/allure/bin/allure /usr/bin/allure
-                fi
-                allure generate allure-results --clean -o allure-report
-            - name: Subir reportes Allure
-              if: always()
-              uses: actions/upload-artifact@v4
-              with:
-                name: allure-report-${{ matrix.browser }}
-                path: |
-                  allure-report/
-                  allure-results/
-                retention-days: 7
-            - name: Subir artefactos de prueba (videos, screenshots)
-              if: always()
-              uses: actions/upload-artifact@v4
-              with:
-                name: test-artifacts-${{ matrix.browser }}
-                path: |
-                  reports/
-                  test-results/
-                retention-days: 7
-            - name: Mostrar resumen de resultados
-              if: always()
-              run: |
-                echo "=== RESUMEN DE EJECUCIÓN ==="
-                echo "Reportes generados en: allure-report/"
-                echo "Videos guardados en: reports/videos/"
-                echo "Screenshots en: reports/screenshots/"
-                if [ -d "allure-results" ]; then
-                  echo "Archivos de resultados Allure:"
-                  ls -la allure-results/
-                fi
+      # 6. Ejecutar pruebas Cucumber
+      - name: Ejecuta Cucumber
+        run: npx cucumber-js
+        env:
+          # Variables específicas para Playwright
+          PLAYWRIGHT_BROWSER: ${{ matrix.browser }}
+          HEADLESS: true
+          CI: true
+          BASE_URL: https://test-adl.leonardojose.dev
 
+      # 7. Cargar historial de reportes Allure (OFICIAL)
+      - name: Cargar historial de reportes previos
+        uses: actions/checkout@v4
+        if: always()
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
 
+      # 8. Construir reporte Allure con historial (OFICIAL)
+      - name: Construir reporte Allure
+        uses: simple-elf/allure-report-action@master
+        if: always()
+        with:
+          gh_pages: gh-pages
+          allure_history: allure-history
+          allure_results: allure-results
 
+      # 9. Publicar reporte a GitHub Pages (OFICIAL)
+      - name: Publicar reporte en GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        if: always()
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history
 
+      # 10. Upload de videos como backup
+      - name: Subir videos y artefactos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-artifacts-${{ matrix.browser }}
+          path: |
+            reports/
+            allure-results/
+          retention-days: 7
+
+      # 11. Mostrar enlaces de reportes
+      - name: Mostrar enlaces de reportes
+        if: always()
+        run: |
+          echo "=== 📊 REPORTES GENERADOS ==="
+          echo ""
+          echo "🌐 Reporte Allure en GitHub Pages:"
+          echo "   https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
+          echo ""
+          echo "📁 Artifacts también disponibles en esta ejecución:"
+          echo "   - Videos: reports/videos/"
+          echo "   - Resultados Allure: allure-results/"
+          echo ""
+          
+          # Contar archivos generados
+          if [ -d "reports/videos" ]; then
+            video_count=$(ls -1 reports/videos/*.webm 2>/dev/null | wc -l)
+            echo "🎥 Videos generados: $video_count"
+          fi
+          
+          if [ -d "allure-results" ]; then
+            result_count=$(ls -1 allure-results/*.json 2>/dev/null | wc -l)
+            echo "📋 Resultados Allure: $result_count archivos"
+          fi
