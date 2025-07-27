@@ -9,6 +9,6 @@ Feature: Funcionalidad de consulta de producto
 
     Scenario: Usuario registrado realiza una consulta de productos existentes
         When el usuario selecciona la lista desplegable de Entidades
-        And  el usuario consulta sobre Artículos
-        Then el usuario está en la página de Artículos
-        And  el usuario puede ver el texto de "Listado de Artículos" 
+        And el usuario está en la página de Artículos
+        And  el usuario selecciona el artículo "IP-16-2025-v13"
+        Then el usauario puede ver el artículo Iphone que contiene la descripción de "Iphone 16 2025 v13"

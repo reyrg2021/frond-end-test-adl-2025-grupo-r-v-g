@@ -12,18 +12,13 @@ When('el usuario selecciona la lista desplegable de Entidades', async function (
     console.log('DEBUG: Click en lista desplegable de Entidades realizado');
 });
 
-When('el usuario consulta sobre Artículos', async function () {
-    await this.page.getByRole('link', { name: 'Artículos' }).click();
-    console.log('DEBUG: Click en enlace Artículos realizado');
-});
-
-Then('el usuario está en la página de Artículos', async function () {
+When('el usuario está en la página de Artículos', async function () {
     await expect(this.page).toHaveURL(/.*\/articulos/);
     console.log('DEBUG: Navegación a página de artículos completada');
 });
 
-Then('el usuario puede ver el texto de {string}', async function (textoEsperado) {
-    await expect(this.page.getByRole('heading', { name: textoEsperado })).toBeVisible();
+Then('el usuario puede ver el artículo Iphone que contiene la descripción de {string}', async function (desc) {
+    await expect(this.page.getByText('heading', { name: desc })).toBeVisible();
     console.log(`DEBUG: Texto "${textoEsperado}" verificado como visible`);
 });
 

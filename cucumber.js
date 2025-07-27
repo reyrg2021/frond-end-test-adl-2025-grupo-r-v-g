@@ -5,8 +5,8 @@ module.exports = {
         paths: [
  //           'features/login.feature',                    // 1. Login primero
             'features/registroProducto.feature',         // 2. Crear producto  
- //           'features/actualizarProducto.feature',       // 3. Actualizar producto
-  //          'features/consultaProducto.feature',         // 4. Consultar producto
+            'features/consultaProducto.feature',         // 3. Consultar producto
+ //           'features/actualizarProducto.feature',       // 4. Actualizar producto
   //          'features/borrarProducto.feature',            // 5. Borrar producto
   //          'features/sesionPersistente.feature'         // 6. Probar sesión persistente
         ],
