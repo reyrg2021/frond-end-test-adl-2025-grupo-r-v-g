@@ -53,10 +53,20 @@ reports/videos/
 ## 📁 Estructura del Proyecto
 
 ```
-├── features/                 # Archivos .feature (Gherkin)
-│   └── login.feature
-├── steps/                    # Step definitions
-│   └── login.steps.js
+├── features/                     # Archivos .feature (Gherkin)
+│   └── actualizarProducto.feature
+|   └── borrarProducto.feature
+|   └── consultaProducto.feature
+|   └── login.feature
+|   └── registroProducto.feature
+|   └── sesionPersistente.feature
+├── steps/                       # Step definitions
+│   └── steps-actualizarProducto.js
+│   └── steps-borrarProducto.js
+│   └── steps-consultaProducto.js
+│   └── steps-login.js
+│   └── steps-registroProducto.js
+│   └── steps-sesionPersistente.js
 ├── support/                  # Configuración y helpers
 │   ├── world.js             # World object para Cucumber
 │   └── hooks.js             # Before/After hooks
