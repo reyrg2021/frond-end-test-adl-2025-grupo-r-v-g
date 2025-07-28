@@ -13,8 +13,8 @@ Feature: Funcionalidad de consulta de producto
         And  el usuario selecciona el artículo "IP-16-2025-v13"
         Then el usuario puede ver el artículo Iphone que contiene la descripción de "Iphone"
 
-    Scenario: Usuario registrado realiza una consulta de productos existentes que no contiene codigo
+    Scenario: Usuario registrado realiza una consulta de productos existentes que no contiene unidad
         When el usuario selecciona la lista desplegable de Entidades
         And  el usuario va a la página de Artículos
-        And  el usuario selecciona el artículo "Iphone 16 2025 v16"
-        Then el usuario puede ver el artículo Iphone que contiene la descripción de "Iphone 16 2025 v16"
+        And  el usuario selecciona el artículo "IP-16-Pro-2025-v17"
+        Then el usuario puede ver el artículo Iphone que contiene la descripción de "Iphone"
