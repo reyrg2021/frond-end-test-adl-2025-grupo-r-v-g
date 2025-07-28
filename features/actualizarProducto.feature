@@ -30,6 +30,6 @@ Feature: Funcionalidad de actualizar un producto
         And  el usuario va a la página de Artículos
         And  el usuario selecciona el artículo "IP-16-Pro-2025-v17"
         And  el usuario selecciona editar los datos 
-        And  el usuario actualiza el formulario con Código "IP-16-Pro-2025-v17",, Descripción "Iphone 16 2025 v17", Stock Actual "10", Costo "1000000", Precio venta "1200000" y selecciona la unidad de medida "Unidad" 
+        And  el usuario actualiza el formulario con Código "IP-16-Pro-2025-v17", Descripción "Iphone 16 2025 v17", Stock Actual "10", Costo "1000000", Precio venta "1200000" y selecciona la unidad de medida "Unidad" 
         Then el usuario ve un mensaje de éxito que contiene "Iphone 16 2025 v17"
         And  el usuario vuelve a la página de Artículos  
