@@ -29,3 +29,8 @@ Then('el usuario se mantiene en la página de crear un nuevo articulo', async fu
     await expect(this.page).toHaveURL(/.*\/nuevo/);
     console.log("Usuario se mantiene en la página de crear un nuevo artículo");
 });
+
+Then('el usuario vuelve a la página de Artículos', async function () {
+    await expect(this.page).toHaveURL(/.*\/articulos/);
+    console.log("Usuario vuelve a la pagina de Artículos");
+});

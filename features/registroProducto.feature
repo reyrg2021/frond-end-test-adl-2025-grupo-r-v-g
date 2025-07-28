@@ -13,7 +13,7 @@ Feature: Funcionalidad de registro de producto
         And  el usuario selecciona crear un nuevo articulo
         And  el usuario crea el formulario con Código "IP-16-2025-v13", Descripción "Iphone 16 2025 v13", Stock Actual "10", Costo "1000000", Precio venta "1200000" y selecciona la unidad de medida "Unidad" 
         Then el usuario ve un mensaje de éxito de artículo creado que contiene "Iphone 16 2025 v13"
-        And el usuario está en la página de Artículos
+        And el usuario vuelve a la página de Artículos
         
     Scenario: Usuario registrado realiza el registro de un nuevo producto con mas de 255 caracteres
         When el usuario selecciona la lista desplegable de Entidades
@@ -28,4 +28,12 @@ Feature: Funcionalidad de registro de producto
         And  el usuario selecciona crear un nuevo articulo
         And  el usuario crea el formulario con Código "", Descripción "Iphone 16 2025 v16", Stock Actual "10", Costo "1000000", Precio venta "1200000" y selecciona la unidad de medida "Unidad" 
         Then el usuario ve un mensaje de éxito de artículo creado que contiene "Iphone 16 2025 v16"
-        And el usuario está en la página de Artículos
+        And el usuario vuelve a la página de Artículos
+
+    Scenario: Usuario registrado realiza el registro de un nuevo producto con un costo negativo
+        When el usuario selecciona la lista desplegable de Entidades
+        And  el usuario va a la página de Artículos
+        And  el usuario selecciona crear un nuevo articulo
+        And  el usuario crea el formulario con Código "IP-16-Pro-2025-v14", Descripción "Iphone 16 2025 v14", Stock Actual "10", Costo "-1000000", Precio venta "1200000" y selecciona la unidad de medida "Unidad" 
+        Then el usuario ve un mensaje de éxito de artículo creado que contiene "Iphone 16 2025 v14"
+        And el usuario vuelve a la página de Artículos
