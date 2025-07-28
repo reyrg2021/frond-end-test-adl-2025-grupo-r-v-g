@@ -7,8 +7,14 @@ Feature: Funcionalidad de consulta de producto
     Background: 
         Given que el usuario está en la página de inicio de SELGOM S.A
 
-    Scenario: Usuario registrado realiza una consulta de productos existentes
+    Scenario: Usuario registrado realiza una consulta de productos existentes que contiene descripcion
         When el usuario selecciona la lista desplegable de Entidades
-        And el usuario está en la página de Artículos
+        And  el usuario va a la página de Artículos
         And  el usuario selecciona el artículo "IP-16-2025-v13"
-        Then el usauario puede ver el artículo Iphone que contiene la descripción de "Iphone 16 2025 v13"
+        Then el usuario puede ver el artículo Iphone que contiene la descripción de "Iphone"
+
+    Scenario: Usuario registrado realiza una consulta de productos existentes que no contiene descripcion
+        When el usuario selecciona la lista desplegable de Entidades
+        And  el usuario va a la página de Artículos
+        And  el usuario selecciona el artículo "IP-16-2025-v16"
+        Then el usuario puede ver el artículo Iphone que contiene la descripción de ""

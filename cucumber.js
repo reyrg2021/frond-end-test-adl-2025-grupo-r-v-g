@@ -3,12 +3,12 @@ module.exports = {
     default: {
         // 'features' con orden específico
         paths: [
- //           'features/login.feature',                    // 1. Login primero
+            'features/login.feature',                    // 1. Login primero
             'features/registroProducto.feature',         // 2. Crear producto  
             'features/consultaProducto.feature',         // 3. Consultar producto
- //           'features/actualizarProducto.feature',       // 4. Actualizar producto
-  //          'features/borrarProducto.feature',            // 5. Borrar producto
-  //          'features/sesionPersistente.feature'         // 6. Probar sesión persistente
+//           'features/actualizarProducto.feature',       // 4. Actualizar producto
+//          'features/borrarProducto.feature',            // 5. Borrar producto
+//          'features/sesionPersistente.feature'         // 6. Probar sesión persistente
         ],
 
 
@@ -34,6 +34,6 @@ module.exports = {
         },
 
 
-        parallel: 1
+        parallel: 0
     }
 };
