@@ -50,7 +50,7 @@ reports/videos/
 
 
 
-## 📁 Estructura del Proyecto
+## Estructura del Proyecto
 
 ```
 ├── features/                     # Archivos .feature (Gherkin)
@@ -72,8 +72,7 @@ reports/videos/
 │   └── hooks.js             # Before/After hooks
 ├── reports/                  # Reportes generados
 │   ├── videos/              # Videos de ejecución
-│   └── screenshots/         # Screenshots de fallos
-├── allure-results/          # Resultados de Allure (JSON)
+├── allure-results/          # Resultados de Allure
 ├── cucumber.js              # Configuración de Cucumber
 └── playwright.config.js     # Configuración de Playwright
 ```
