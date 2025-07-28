@@ -23,5 +23,8 @@ Then('el usuario ve un mensaje de éxito que contiene {string}', async function 
     console.log(`Mensaje de éxito completo verificado: ${mensajeCompleto}`);
 });
 
-
-
+Then('el usuario ve un mensaje de error que contiene {string}', async function (errorMessage) {
+    const mensajeCompleto = `"${errorMessage}": El campo descripción no puede tener mas de 255 caracteres `;    
+    await expect(this.page.getByText(mensajeCompleto)).toContainText(errorMessage);   
+    console.log(`Mensaje de error verificado: ${mensajeCompleto}`);
+});
