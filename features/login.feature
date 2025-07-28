@@ -20,7 +20,7 @@ Feature: Funcionalidad de login
         And  el usuario inicia la sesión en el botón de login
         Then el usuario ve un mensaje error como "Las credenciales proporcionadas son incorrectas"
         And  el usuario se mantiene en la página de login de SELGOM S.A
-        
+      
         
 
             

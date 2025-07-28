@@ -43,5 +43,6 @@ Then('el usuario ve un mensaje error como {string}', async function (descripcion
 Then('el usuario se mantiene en la página de login de SELGOM S.A', async function () {
     // await this.page.waitForURL(/.*\/login/, { timeout: 10000 });
     await expect(this.page).toHaveURL(/.*\/login/);
+    console.log("DEBUG: Usuario permanece en la página de login");
 });
 

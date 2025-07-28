@@ -97,8 +97,8 @@ After(async function (scenario) {
 Before({ tags: '@esperado-que-falle' }, async function () {
     console.log('Preparando producto para escenario de confirmación...');
     
-    await this.page.getByText('Entidades').click();
-    await this.page.getByText('Artículos').click();
+    await this.page.getByRole('listitem').filter({ hasText: 'Entidades' }).getByRole('img').nth(1).click();
+    await this. page.getByRole('link', { name: 'Artículos' }).click();
     await this.page.getByRole('button', { name: 'Crear Artículo' }).click();
     
     const datosProductoTemporal = {

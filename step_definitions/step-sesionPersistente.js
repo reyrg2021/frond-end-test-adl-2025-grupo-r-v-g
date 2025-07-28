@@ -13,9 +13,10 @@ When('el usuario cierra el navegador y vuelve a abrir la aplicación', async fun
     await this.goTo('/');
     console.log('DEBUG: Nueva instancia de navegador abierta con sesión persistente');
 });
-
+/*
 Then('el usuario se mantiene en la página de login de SELGOM S.A', async function () {
     await expect(this.page).toHaveURL(/.*\/login/);
     console.log('DEBUG: Se mantiene en la página de login');
 });
 
+*/
